@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     const csvText = await response.text();
 
     const lines = csvText.trim().split(/\r?\n/);
-    const headers = lines[0].split(',').map(h => h.trim());
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
 
     const rows = lines.slice(1).map(line => {
       const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, '').replace(/\u00A0/g, ''));
