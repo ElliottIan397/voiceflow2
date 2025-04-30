@@ -1,28 +1,38 @@
+const CSV_URL = 'https://eandssolutions-my.sharepoint.com/:x:/p/ianelliott/Ea7VC-02OP9CgxcJH8DbZ_YBViSpmmpQ1F8TDwhNmdeXjQ?download=1';
+
 export default async function handler(req, res) {
   const { sku } = req.query;
 
-  if (!sku) return res.status(400).json({ error: "Missing 'sku' parameter" });
+  if (!sku) {
+    return res.status(400).json({ error: 'Missing SKU' });
+  }
 
-  const records = [
-    {
-      sku: "CPT/TN450J",
-      product_url: "https://store.reliancegroupusa.com/brother-tn450-jumbo-yield-black-toner-cartridge",
-      image_url: "https://img.powerecommerce.com/images/products/brother/tn450.jpg"
-    },
-    {
-      sku: "CPT/TN350",
-      product_url: "https://store.reliancegroupusa.com/brother-tn350-black-toner-cartridge",
-      image_url: "https://img.powerecommerce.com/images/Products/brother/TN350.jpg"
+  try {
+    const response = await fetch(CSV_URL);
+    const csvText = await response.text();
+    const lines = csvText.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim());
+
+    const rows = lines.slice(1).map(line => {
+      const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, '').replace(/\u00A0/g, ''));
+      return Object.fromEntries(headers.map((h, i) => [h, values[i] || ""]));
+    });
+
+    const match = rows.find(row => row.sku.trim() === sku.trim());
+
+    if (!match) {
+      return res.status(404).json({ error: 'Product not found' });
     }
-  ];
 
-  const product = records.find(row => row.sku === sku);
+    return res.status(200).json({
+      sku: match.sku,
+      product_url: match.product_url,
+      image_url: match.image_url,
+    });
 
-  if (!product) return res.status(404).json({ error: 'Product not found' });
-
-  return res.status(200).json({
-    sku: product.sku,
-    product_url: product.product_url,
-    image_url: product.image_url
-  });
+  } catch (err) {
+    console.error('CSV Fetch/Parse Error:', err);
+    return res.status(500).json({ error: 'Server error retrieving product info.' });
+  }
 }
+
