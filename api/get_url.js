@@ -8,6 +8,11 @@ export default async function handler(req, res) {
       sku: "CPT/TN450J",
       product_url: "https://store.reliancegroupusa.com/brother-tn450-jumbo-yield-black-toner-cartridge",
       image_url: "https://img.powerecommerce.com/images/products/brother/tn450.jpg"
+    },
+    {
+      sku: "CPT/TN350",
+      product_url: "https://store.reliancegroupusa.com/brother-tn350-black-toner-cartridge",
+      image_url: "https://img.powerecommerce.com/images/Products/brother/TN350.jpg"
     }
   ];
 
