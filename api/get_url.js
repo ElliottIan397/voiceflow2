@@ -5,17 +5,13 @@ export default async function handler(req, res) {
     const response = await fetch(CSV_URL);
     const csvText = await response.text();
 
+    // Split using universal line endings
     const lines = csvText.trim().split(/\r?\n/);
-    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
 
-    const rows = lines.slice(1).map(line => {
-      const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, '').replace(/\u00A0/g, ''));
-      return Object.fromEntries(headers.map((h, i) => [h, values[i] || ""]));
-    });
-
+    // Return raw lines for inspection
     return res.status(200).json({
-      record_count: rows.length,
-      rows
+      first_5_lines: lines.slice(0, 5),
+      total_lines: lines.length
     });
 
   } catch (err) {
