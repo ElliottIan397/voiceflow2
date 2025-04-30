@@ -1,4 +1,4 @@
-const CSV_URL = 'https://eandssolutions-my.sharepoint.com/:x:/p/ianelliott/Ea7VC-02OP9CgxcJH8DbZ_YBViSpmmpQ1F8TDwhNmdeXjQ?download=1';
+const CSV_URL = 'https://raw.githubusercontent.com/ElliottIan397/voiceflow2/main/VF_API_TestProject042925.csv';
 
 export default async function handler(req, res) {
   try {
