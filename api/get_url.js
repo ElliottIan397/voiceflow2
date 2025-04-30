@@ -15,11 +15,20 @@ export default async function handler(req, res) {
     const records = parse(csvText, {
       columns: true,
       skip_empty_lines: true,
+      trim: true,
     });
+
+    console.log("CSV Records Loaded:", records.length);
+    console.log("Looking for SKU:", sku);
 
     const product = records.find(row => row.sku === sku);
 
-    if (!product) return res.status(404).json({ error: 'Product not found' });
+    if (!product) {
+      console.log("SKU not found in records.");
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    console.log("Product matched:", product);
 
     return res.status(200).json({
       sku: product.sku,
@@ -27,6 +36,7 @@ export default async function handler(req, res) {
       image_url: product.image_url,
     });
   } catch (err) {
+    console.error("Fetch/Parse error:", err);
     return res.status(500).json({ error: 'Failed to fetch or parse CSV' });
   }
 }
